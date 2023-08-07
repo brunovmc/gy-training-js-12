@@ -13,7 +13,7 @@ async function calculateHourlyAggregation(file) {
     fs.createReadStream(file)
       .pipe(csvParser({ separator: ';' }))
       .on('data', (row) => {
-        const date = parseDateTime(row.dateTime);
+        const date = parseDateTime(row.dateTime.replace(',','.'));
   
         if (currentHourStart === null) {
           currentHourStart = new Date(date.getFullYear(), date.getMonth(), date.getDate(), date.getHours(), 0, 0);
@@ -41,7 +41,7 @@ async function calculateHourlyAggregation(file) {
       .on('end', () => {
         console.log("Hourly Aggregation Report:");
         for (const hourStartDate in hourlyData) {
-          const { sum, count, alarmCount } = hourlyData[hourStartDate];
+          const { sum, count } = hourlyData[hourStartDate];
           const hourlyAverage = sum / count;
           console.log(`date ${hourStartDate} - Average Energy Usage: ${hourlyAverage.toFixed(2)} kWh`);
         }
